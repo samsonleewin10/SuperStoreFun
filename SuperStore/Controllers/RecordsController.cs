@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using SuperStore.Models;
+using Microsoft.ApplicationInsights;
 
 namespace SuperStore.Controllers
 {
@@ -14,9 +15,12 @@ namespace SuperStore.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
+		private TelemetryClient telemetry = new TelemetryClient();
+
         // GET: Records
         public ActionResult Index()
         {
+			telemetry.TrackEvent("View Purchase Records");
             return View(db.Records.ToList());
         }
 
@@ -38,6 +42,7 @@ namespace SuperStore.Controllers
         // GET: Records/Create
         public ActionResult Create()
         {
+			telemetry.TrackEvent("Attempt to Purchase");
             return View();
         }
 
@@ -50,6 +55,7 @@ namespace SuperStore.Controllers
         {
             if (ModelState.IsValid)
             {
+				telemetry.TrackEvent("Made a Purchase");
                 db.Records.Add(record);
                 db.SaveChanges();
                 return RedirectToAction("Index");
